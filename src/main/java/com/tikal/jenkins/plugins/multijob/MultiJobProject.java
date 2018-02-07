@@ -19,7 +19,7 @@ import hudson.model.Descriptor.FormException;
 import hudson.util.AlternativeUiTextProvider;
 import hudson.scm.PollingResult;
 import hudson.scm.PollingResult.*;
-
+import hudson.tasks.test.AbstractTestResultAction;
 import com.tikal.jenkins.plugins.multijob.views.MultiJobView;
 
 import net.sf.json.JSONObject;
@@ -37,25 +37,25 @@ public class MultiJobProject extends Project<MultiJobProject, MultiJobBuild>
 
     @SuppressWarnings("rawtypes")
     private MultiJobProject(ItemGroup parent, String name) {
-            super(parent, name);
+        super(parent, name);
     }
 
     public MultiJobProject(Hudson parent, String name) {
-            super(parent, name);
+        super(parent, name);
     }
 
     @Override
     protected Class<MultiJobBuild> getBuildClass() {
-            return MultiJobBuild.class;
+        return MultiJobBuild.class;
     }
 
     @Override
     public String getPronoun() {
-            return AlternativeUiTextProvider.get(PRONOUN, this, getDescriptor().getDisplayName());
+        return AlternativeUiTextProvider.get(PRONOUN, this, getDescriptor().getDisplayName());
     }
 
     public DescriptorImpl getDescriptor() {
-            return DESCRIPTOR;
+        return DESCRIPTOR;
     }
 
     @Extension(ordinal = 1000)
@@ -63,30 +63,30 @@ public class MultiJobProject extends Project<MultiJobProject, MultiJobBuild>
 
     public static final class DescriptorImpl extends AbstractProjectDescriptor {
         public String getDisplayName() {
-                return "MultiJob Project";
+            return "MultiJob Project";
         }
 
         @SuppressWarnings("rawtypes")
         public MultiJobProject newInstance(ItemGroup itemGroup, String name) {
-                return new MultiJobProject(itemGroup, name);
+            return new MultiJobProject(itemGroup, name);
         }
     }
 
     @Override
     protected void buildDependencyGraph(DependencyGraph graph) {
-            super.buildDependencyGraph(graph);
+        super.buildDependencyGraph(graph);
     }
 
     public boolean isTopMost() {
-            return getUpstreamProjects().size() == 0;
+        return getUpstreamProjects().size() == 0;
     }
 
     public MultiJobView getView() {
-            return new MultiJobView("");
+        return new MultiJobView("");
     }
 
     public String getRootUrl() {
-            return Jenkins.getInstance().getRootUrl();
+        return Jenkins.getInstance().getRootUrl();
     }
 
     @Override
@@ -126,9 +126,9 @@ public class MultiJobProject extends Project<MultiJobProject, MultiJobBuild>
     }
 
     public String getResumeEnvVars() {
-			return resumeEnvVars;
-		}
-		
+        return resumeEnvVars;
+    }
+
     public boolean getDisableResumeBuild() {
         return this.disableResumeBuild;
     }
@@ -142,13 +142,13 @@ public class MultiJobProject extends Project<MultiJobProject, MultiJobBuild>
         return b != null ? b.getAction(AbstractTestResultAction.class) : null;
     }
 
-        public void setResumeEnvVars(String resumeEnvVars) {
-			this.resumeEnvVars = resumeEnvVars;
-		}
+    public void setResumeEnvVars(String resumeEnvVars) {
+        this.resumeEnvVars = resumeEnvVars;
+    }
 
-        public boolean getCheckResumeEnvVars() {
-        	return !StringUtils.isBlank(resumeEnvVars);
-        }
+    public boolean getCheckResumeEnvVars() {
+        return !StringUtils.isBlank(resumeEnvVars);
+    }
 
     @Override
     protected void submit(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException, FormException {
@@ -161,7 +161,7 @@ public class MultiJobProject extends Project<MultiJobProject, MultiJobBuild>
             if (json.has(k)) {
                 setPollSubjobs(json.optBoolean(k));
             }
-            
+
             k = "disableResumeBuild";
             if (json.has(k)) {
                 setDisableResumeBuild(json.getBoolean(k));

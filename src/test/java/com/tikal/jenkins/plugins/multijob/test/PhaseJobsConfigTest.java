@@ -85,7 +85,7 @@ public class PhaseJobsConfigTest extends HudsonTestCase{
 
 		List<Action> actions = pjc.getActions(mjb, TaskListener.NULL, projectB, true);
 		// check single ParametersAction created
-		assertEquals(0, actions.size());
+		assertEquals(1, actions.size());
 	}
 
 	@Test
@@ -292,7 +292,7 @@ public class PhaseJobsConfigTest extends HudsonTestCase{
 
 	private void checkParameterMatch(Map<String, String> combinedlist, MultiJobParametersAction pa) {
 		assertTrue(pa != null);
-		assertEquals(combinedlist.size(), pa.getParameters().size());
+		assertEquals(combinedlist.size() + 3, pa.getParameters().size());
 		for(String key : combinedlist.keySet()) {
 			assertEquals(((StringParameterValue)pa.getParameter(key)).value, combinedlist.get(key));
 		}

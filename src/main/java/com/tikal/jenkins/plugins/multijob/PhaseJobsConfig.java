@@ -496,7 +496,7 @@ public class PhaseJobsConfig implements Describable<PhaseJobsConfig> {
                 paramsValuesList2.add(new StringParameterValue("PARENT_BUILD_NUMBER", parentBuildNumber));
                 paramsValuesList2.add(new StringParameterValue("PARENT_BUILD_NAME", String.format("%s-%s", parentJobName, parentBuildNumber)));
 
-		ParametersAction params2 = new ParametersAction(
+		MultiJobParametersAction params2 = new MultiJobParametersAction(
                         paramsValuesList2.toArray(new ParameterValue[paramsValuesList2.size()]));
 
                 if (params == null) {

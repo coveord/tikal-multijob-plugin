@@ -263,10 +263,6 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
             }
         }
 
-        Jenkins jenkins = Jenkins.getInstance();
-        MultiJobBuild multiJobBuild = (MultiJobBuild) build;
-
-        MultiJobProject thisProject = multiJobBuild.getProject();
         Map<PhaseSubJob, PhaseJobsConfig> phaseSubJobs = new HashMap<PhaseSubJob, PhaseJobsConfig>(
                 phaseJobs.size());
         final CounterManager phaseCounters = new CounterManager();
