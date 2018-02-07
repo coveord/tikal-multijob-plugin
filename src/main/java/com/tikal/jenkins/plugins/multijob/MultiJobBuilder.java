@@ -216,6 +216,10 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
         MultiJobBuild multiJobBuild = (MultiJobBuild) build;
         MultiJobProject thisProject = multiJobBuild.getProject();
 
+        if (executionType == null) {
+            executionType = ExecutionType.PARALLEL;
+        }
+        
         boolean resume = false;
         Map<String, SubBuild> successBuildMap = new HashMap<String, SubBuild>();
         Map<String, SubBuild> resumeBuildMap = new HashMap<String, SubBuild>();
@@ -387,6 +391,7 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
         if (null == executionType) {
             executionType = ExecutionType.PARALLEL;
         }
+        
         int poolSize = executionType.isParallel() ? subTasks.size() : 1;
         ExecutorService executor = Executors.newFixedThreadPool(poolSize);
         Set<Result> jobResults = new HashSet<Result>();
