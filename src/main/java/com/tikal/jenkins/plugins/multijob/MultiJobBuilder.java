@@ -70,7 +70,6 @@ import java.util.regex.Pattern;
 import org.jenkinsci.plugins.tokenmacro.TokenMacro;
 
 import groovy.util.*;
-import hudson.plugins.parameterizedtrigger.AbstractBuildParameters.DontTriggerException;
 import java.util.concurrent.CancellationException;
 import jenkins.model.CauseOfInterruption;
 
@@ -264,7 +263,11 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
             }
         }
 
-        Map<PhaseSubJob, PhaseJobsConfig> phaseSubJobs = new LinkedHashMap<PhaseSubJob, PhaseJobsConfig>(
+        Jenkins jenkins = Jenkins.getInstance();
+        MultiJobBuild multiJobBuild = (MultiJobBuild) build;
+
+        MultiJobProject thisProject = multiJobBuild.getProject();
+        Map<PhaseSubJob, PhaseJobsConfig> phaseSubJobs = new HashMap<PhaseSubJob, PhaseJobsConfig>(
                 phaseJobs.size());
         final CounterManager phaseCounters = new CounterManager();
         boolean aggragatedTestResults = false;
@@ -799,13 +802,10 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
                 jobBuild.getNumber(), phaseName, Result.ABORTED, BallColor.ABORTED.getImage(), "", jobBuild.getUrl(), false, true, jobBuild);
         multiJobBuild.addSubBuild(subBuild);
     }
-
-    @SuppressWarnings("rawtypes")
-    private synchronized void addBuildEnvironmentVariables(MultiJobBuild thisBuild,
-            AbstractBuild jobBuild, BuildListener listener) {
-        // Env variables map
+    
+    private synchronized Map<String, String> getPreviousVariable(MultiJobBuild thisBuild, 
+            BuildListener listener) {
         Map<String, String> variables = new HashMap<String, String>();
-
         // Fetch the map of existing environment variables
         try {
 
@@ -815,8 +815,7 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
                     .getEnvVarsPreviousSteps(thisBuild, logger);
 
             // Get current envVars
-            variables = new HashMap<String, String>(
-                    previousEnvVars);
+            variables = new HashMap<String, String>( previousEnvVars);
 
         } catch (Throwable throwable) {
             listener.getLogger()
@@ -824,6 +823,14 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
                             "[MultiJob] - [ERROR] - Problems occurs on fetching env vars as a build step: "
                                     + throwable.getMessage());
         }
+        return variables;
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private synchronized void addBuildEnvironmentVariables(MultiJobBuild thisBuild,
+            AbstractBuild jobBuild, BuildListener listener) {
+        // Env variables map
+        Map<String, String> variables = getPreviousVariable(thisBuild, listener);
 
         String jobName = jobBuild.getProject().getName();
         String jobNameSafe = jobName.replaceAll("[^A-Za-z0-9]", "_")
@@ -918,12 +925,9 @@ public class MultiJobBuilder extends Builder implements DependecyDeclarer {
             PhaseJobsConfig projectConfig, BuildListener listener,
             List<Action> actions, int index) throws IOException, InterruptedException {
         List<Action> parametersActions = null;
-        // if (projectConfig.hasProperties()) {
         parametersActions = (List<Action>) projectConfig.getActions(build, listener, project, projectConfig.isCurrParams());
         actions.addAll(parametersActions);
-        // }
         actions.add(new MultiJobAction(build, index));
-
     }
 
     private class MultiJobAction implements Action, QueueAction {
