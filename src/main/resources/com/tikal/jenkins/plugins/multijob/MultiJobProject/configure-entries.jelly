@@ -31,6 +31,9 @@ THE SOFTWARE.
         <f:textbox field="resumeEnvVars"/>
       </f:entry>
     </f:optionalBlock>
+    <f:entry title="Disable the resume build option" field="disableResumeBuild" help="/plugin/jenkins-multijob-plugin/help-disableResumeBuild.html">
+      <f:checkbox/>
+    </f:entry>
   </f:section>
 
   <p:config-trigger/>
